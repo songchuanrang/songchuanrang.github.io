@@ -1,7 +1,10 @@
 ---
 title: Tomcat源码学习
+linktitle: Tomcat源码学习
+type: book
 date: 2023/10/10 15:38:17
 comments: true
+toc: true
 ---
 
 # Tomcat

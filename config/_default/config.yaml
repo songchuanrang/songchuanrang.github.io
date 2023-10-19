@@ -3,15 +3,26 @@
 # Hugo Documentation: https://gohugo.io/getting-started/configuration/#all-configuration-settings
 # This file is formatted using YAML syntax - learn more at https://learnxinyminutes.com/docs/yaml/
 
-title: 学习分享 # Website name
+title: '学习分享' # Website name
 baseURL: 'https://songchuanrang.github.io/' # Website URL
+
+############################
+## PAGE OPTIONS
+############################
+
+cascade:
+  # Docs folder options
+  - _target:
+      path: /docs/**
+    editable: true
+    show_breadcrumb: true
 
 ############################
 ## LANGUAGE
 ############################
 
-defaultContentLanguage: en
-hasCJKLanguage: false
+defaultContentLanguage: zh
+hasCJKLanguage: true
 defaultContentLanguageInSubdir: false
 removePathAccents: true
 
@@ -20,9 +31,10 @@ removePathAccents: true
 ############################
 
 module:
+  proxy: https://127.0.0.1:7890
   imports:
+    - path: github.com/wowchemy/wowchemy-hugo-themes/modules/wowchemy-plugin-netlify-cms
     - path: github.com/wowchemy/wowchemy-hugo-themes/modules/wowchemy-plugin-netlify
-    - path: github.com/wowchemy/wowchemy-hugo-themes/modules/wowchemy-plugin-reveal
     - path: github.com/wowchemy/wowchemy-hugo-themes/modules/wowchemy/v5
 
 ############################
@@ -37,10 +49,9 @@ enableRobotsTXT: true
 footnotereturnlinkcontents: <sup>^</sup>
 ignoreFiles: [\.ipynb$, .ipynb_checkpoints$, \.Rmd$, \.Rmarkdown$, _cache$]
 permalinks:
-  event: '/talk/:slug/'
+  authors: '/author/:slug/'
   tags: '/tag/:slug/'
   categories: '/category/:slug/'
-  publication_types: '/publication-type/:slug/'
 disableAliases: true
 outputs:
   home: [HTML, RSS, JSON, WebAppManifest, headers, redirects]
@@ -53,7 +64,6 @@ timeout: 600000
 taxonomies:
   tag: tags
   category: categories
-  publication_type: publication_types
   author: authors
 markup:
   _merge: deep

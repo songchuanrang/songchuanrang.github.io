@@ -15,16 +15,16 @@ appearance:
 
 marketing:
   seo:
-    site_type: Person
+    site_type: Project
     local_business_type: ''
     org_name: ''
-    description: 'A highly-customizable Hugo academic resume theme powered by Wowchemy website builder.'
+    description: 'A highly-customizable Hugo documentation theme powered by Wowchemy website builder.'
     twitter: 'wowchemy'
   analytics:
     google_analytics: ''
     baidu_tongji: ''
     google_tag_manager: ''
-    microsoft_clarity: ''  
+    microsoft_clarity: ''
   verification:
     google: ''
     baidu: ''
@@ -40,9 +40,7 @@ header:
     show_day_night: true
     show_search: true
     highlight_active_link: true
-
-# Site footer
-
+docs_section_pager: true
 footer:
   copyright:
     notice: '© {year} Me. This work is licensed under {license}'
@@ -57,7 +55,6 @@ footer:
 locale:
   date_format: 'Jan 2, 2006'
   time_format: '3:04 PM'
-  address_format: en-us
 
 # Site features
 
@@ -70,12 +67,13 @@ features:
   privacy_pack:
     enable: false
   repository:
-    url: 'https://github.com/<username>/<repository>'
+    url: 'https://github.com/wowchemy/hugo-documentation-theme'
     content_dir: content
     branch: main
-  avatar:
-    gravatar: false
-    shape: circle
+  feedback:
+    responses:
+      positive: 'Glad to hear it! [Any ideas for improvements?](https://github.com/<USERNAME>/<REPO>/issues/new).'
+      negative: 'Sorry to hear that. [Please tell us how we can improve](https://github.com/<USERNAME>/<REPO>/issues/new).'
   comment:
     provider: ''
     disqus:
@@ -95,22 +93,3 @@ features:
       api_key: ''
       index_name: ''
       show_logo: false
-  map:
-    provider: ''
-    api_key: ''
-    zoom: 15
-
-# Extensions
-
-extensions:
-  cms:
-    branch: main
-    local_backend: false
-  academicons:
-    enable: true
-
-# Security
-
-security:
-  # Allow frame for embedding speaker notes in slides
-  allow_frame: true

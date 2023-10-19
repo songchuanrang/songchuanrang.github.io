@@ -1,6 +1,7 @@
 ---
 title: JAVA NIO
 date: 2022/4/12 22:15:59
+type: book
 comments: true
 category:
  - JAVA IO

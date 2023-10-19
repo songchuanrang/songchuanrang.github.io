@@ -1,7 +1,7 @@
 ---
 title: div盒子模型及html布局
 date: 2022/4/5 20:37:25
-comments: true
+type: book
 category:
   - 前端
 keywords:

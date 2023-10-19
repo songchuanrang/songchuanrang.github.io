@@ -1,12 +1,13 @@
 ---
 title: centos挂载iso文件作为yum安装源
 date: 2023/2/11 19:37:25
-comments: true
+type: book
 category:
   - linux
 keywords:
   - centos7
   - yum
+weight: 3
 ---
 ## 简介
 centos挂载iso文件作为yum安装源

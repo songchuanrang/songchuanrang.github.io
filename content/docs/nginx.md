@@ -1,7 +1,11 @@
 ---
 title: nginx安装及配置
+linktitle: nginx安装及配置
+type: book
 date: 2022/4/3 20:35:25
-comments: true
+
+# Prev/next pager order (if `docs_section_pager` enabled in `params.toml`)
+weight: 3
 ---
 ## 简介
 本文旨在完成nginx的安装以及前端和后端的转发配置（以linux为例）

@@ -1,7 +1,7 @@
 ---
 title: GC日志分析之GCViewer
 date: 2022/4/3 20:37:25
-comments: true
+type: book
 ---
 ## 源码下载
 源码地址： https://github.com/chewiebug/GCViewer

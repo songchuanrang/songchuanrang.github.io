@@ -31,7 +31,6 @@ removePathAccents: true
 ############################
 
 module:
-  proxy: https://127.0.0.1:7890
   imports:
     - path: github.com/wowchemy/wowchemy-hugo-themes/modules/wowchemy-plugin-netlify-cms
     - path: github.com/wowchemy/wowchemy-hugo-themes/modules/wowchemy-plugin-netlify

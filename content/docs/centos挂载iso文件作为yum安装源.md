@@ -1,6 +1,6 @@
 ---
 title: centos挂载iso文件作为yum安装源
-date: 2023/2/11 19:37:25
+date: 2023-02-11 19:37:25.000 +0800
 type: book
 category:
   - linux

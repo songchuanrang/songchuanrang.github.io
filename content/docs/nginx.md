@@ -2,7 +2,7 @@
 title: nginx安装及配置
 linktitle: nginx安装及配置
 type: book
-date: 2022/4/3 20:35:25
+date: 2022-04-03 20:35:25.000 +0800
 
 # Prev/next pager order (if `docs_section_pager` enabled in `params.toml`)
 weight: 3

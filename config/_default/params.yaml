@@ -40,10 +40,10 @@ header:
     show_day_night: true
     show_search: true
     highlight_active_link: true
-docs_section_pager: true
+
 footer:
   copyright:
-    notice: '© {year} Me. This work is licensed under {license}'
+    notice: '© {year} songchuanrang. This work is licensed under {license}'
     license:
       enable: true
       allow_derivatives: false
@@ -67,7 +67,7 @@ features:
   privacy_pack:
     enable: false
   repository:
-    url: 'https://github.com/wowchemy/hugo-documentation-theme'
+    url: 'https://github.com/songchuanrang/songchuanrang.github.io'
     content_dir: content
     branch: main
   feedback:

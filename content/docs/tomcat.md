@@ -3,7 +3,7 @@ title: Tomcat源码学习
 linktitle: Tomcat源码学习
 type: book
 date: 2023-10-19 15:38:17.000 +0800
-comments: true
+weight: 60
 toc: true
 ---
 
@@ -568,7 +568,7 @@ AppClassLoader --> CommonClassLoader
 CommonClassLoader --> CatalinaClassLoader
 CommonClassLoader --> CharedClassLoader
 CharedClassLoader --> WebAppClassLoader
-CharedClassLoader --> WebAppClassLoader...
+CharedClassLoader --> WebAppClassLoader···
 ```
 
 Tomcat 的解决方案是自定义一个类加载器 WebAppClassLoader， 并且给每个 Web 应用创建一个类加载器实例。我们知道，Context 容器组件对应一个 Web 应用，因此，每个 Context 容器负责创建和维护一个 WebAppClassLoader 加载器实例。这背后的原理是，不同的加载器实例加载的类被认为是不同的类，即使它们的类名相同。这就相当于在 Java 虚拟机内部创建了一个个相互隔离的 Java 类空间，每一个 Web 应用都有自己的类空间，Web 应用之间通过各自的类加载器互相隔离。

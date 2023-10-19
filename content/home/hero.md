@@ -2,7 +2,7 @@
 widget: hero
 headless: true
 weight: 10
-title: 开始今天的学习吧！
+title: 路漫漫其修远兮，吾将上下而求索！
 design:
   background:
     gradient_start: '#4bb4e3'

@@ -12,5 +12,5 @@ cta:
   url: docs/
   label: 开始
   icon_pack: fas
-  icon: download
+  icon: forward
 ---

@@ -53,7 +53,7 @@ footer:
 # Localization
 
 locale:
-  date_format: '2006/Jan/2'
+  date_format: '2006/1/2'
   time_format: '15:04:05'
 
 # Site features

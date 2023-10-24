@@ -1,7 +1,8 @@
 ---
 title: JAVA GC
 date: 2022/4/25 20:31:16
-comments: true
+type: book
+draft: true
 category:
  - JAVA GC
 keywords:

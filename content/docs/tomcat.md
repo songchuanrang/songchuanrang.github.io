@@ -52,13 +52,10 @@ Tomcat 设计了 4 种父子关系的容器，分别是 Engine、Host、Context 
 ### 1.3 请求定位 Servlet
 
 1. 首先，根据协议和端口号选定 Service 和 Engine。
-   我们知道 Tomcat 的每个连接器都监听不同的端口，比如 Tomcat 默认的 HTTP 连接器监听 8080 端口、默认的 AJP 连接器监听 8009 端口。上面例子中的 URL 访问的是 8080 端口，因此这个请求会被 HTTP 连接器接收，而一个连接器是属于一个 Service 组件的，这样 Service 组件就确定了。我们还知道一个 Service 组件里除了有多个连接器，还有一个容器组件，具体来说就是一个 Engine 容器，因此 Service 确定了也就意味着 Engine 也确定了。
-2. 然后，根据域名选定 Host。
-   Service 和 Engine 确定后，Mapper 组件通过 URL 中的域名去查找相应的 Host 容器
-3. 之后，根据 URL 路径找到 Context 组件。
-   Host 确定以后，Mapper 根据 URL 的路径来匹配相应的 Web 应用的路径
-4. 最后，根据 URL 路径找到 Wrapper（Servlet）。
-   Context 确定后，Mapper 再根据 web.xml 中配置的 Servlet 映射路径来找到具体的 Wrapper 和 Servlet。
+   我们知道 Tomcat 的每个连接器都监听不同的端口，比如 Tomcat 默认的 HTTP 连接器监听 8080 端口、默认的 AJP 连接器监听 8009 端口。当我们访问监听器监听的端口时，就会被相应的连接器接收，而一个连接器是属于一个 Service 组件的，这样 Service 组件就确定了。我们还知道一个 Service 组件里除了有多个连接器，还有一个容器组件，具体来说就是一个 Engine 容器，因此 Service 确定了也就意味着 Engine 也确定了。
+2. 然后，Mapper 组件通过 URL 中的域名去查找相应的 Host 容器
+3. 之后，Mapper 组件根据 URL 的路径来匹配相应的 Web 应用的路径，找到context组件
+4. 最后，Mapper 组件再根据 web.xml 中配置的 Servlet 映射路径来找到具体的 Wrapper 和 Servlet。
 
 ### 1.4 容器中的责任链调用
 

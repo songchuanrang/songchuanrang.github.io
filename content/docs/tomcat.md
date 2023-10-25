@@ -1,6 +1,6 @@
 ---
 title: Tomcat源码学习
-linktitle: Tomcat源码学习
+linktitle: tomcat
 type: book
 date: 2023-10-19 15:38:17.000 +0800
 weight: 60
@@ -44,14 +44,10 @@ Tomcat 的设计者设计了 3 个组件来实现这 3 个功能，分别是
 容器负责加载和管理 Servlet，以及具体处理 Request 请求。
 Tomcat 设计了 4 种父子关系的容器，分别是 Engine、Host、Context 和 Wrapper。
 
-1. Engine
-   Engine 表示引擎，用来管理多个虚拟站点，一个 Service 最多只能有一个 Engine。
-2. Host
-   Host 代表的是一个虚拟主机，或者说一个站点，可以给 Tomcat 配置多个虚拟主机地址，而一个虚拟主机下可以部署多个 Web 应用程序；
-3. Context
-   Context 表示一个 Web 应用程序；
-4. Wrapper
-   Wrapper 表示一个 Servlet，一个 Web 应用程序中可能会有多个 Servlet；
+1. Engine：表示引擎，用来管理多个虚拟站点，一个 Service 最多只能有一个 Engine。
+2. Host：代表的是一个虚拟主机，或者说一个站点，可以给 Tomcat 配置多个虚拟主机地址，而一个虚拟主机下可以部署多个 Web 应用程序；
+3. Context：表示一个 Web 应用程序；
+4. Wrapper：表示一个 Servlet，一个 Web 应用程序中可能会有多个 Servlet；
 
 ### 1.3 请求定位 Servlet
 

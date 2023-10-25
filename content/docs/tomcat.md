@@ -587,9 +587,9 @@ Tomcat 的解决方案是自定义一个类加载器 WebAppClassLoader， 并且
 
 **线程上下文加载器**
 
-## 6 SpringBoot 使用内嵌式的 Tomcat
+## 7 SpringBoot 使用内嵌式的 Tomcat
 
-### 6.1 SpringBoot 中 Web 容器相关的接口
+### 7.1 SpringBoot 中 Web 容器相关的接口
 
 Spring Boot 对内嵌式 Web 容器进行了抽象，定义了 WebServer 接口：
 
@@ -629,7 +629,7 @@ public interface WebServerFactoryCustomizer<T extends WebServerFactory> {
 }
 ```
 
-### 6.2 内嵌式 Web 容器的创建和启动
+### 7.2 内嵌式 Web 容器的创建和启动
 
 铺垫了这些接口，我们再来看看 Spring Boot 是如何实例化和启动一个 Web 容器的。我们知道，Spring 的核心是一个 ApplicationContext，它的抽象实现类 AbstractApplicationContext 实现了著名的 refresh 方法，它用来新建或者刷新一个 ApplicationContext，在 refresh 方法中会调用 onRefresh 方法，AbstractApplicationContext 的子类可以重写这个 onRefresh 方法，来实现特定 Context 的刷新逻辑，因此 ServletWebServerApplicationContext 就是通过重写 onRefresh 方法来创建内嵌式的 Web 容器，具体创建过程是这样的：
 
@@ -701,7 +701,7 @@ public WebServer getWebServer(ServletContextInitializer... initializers) {
 class TomcatEmbeddedContext extends StandardContext {}
 ```
 
-### 6.3 注册 Servlet 的三种方式
+### 7.3 注册 Servlet 的三种方式
 
 1. Servlet 注解  
    在 Spring Boot 启动类上加上@ServletComponentScan 注解后，使用@WebServlet、@WebFilter、@WebListener 标记的 Servlet、Filter、Listener 就可以自动注册到 Servlet 容器中.
@@ -745,7 +745,7 @@ class TomcatEmbeddedContext extends StandardContext {}
    - ServletRegistrationBean 其实也是通过 ServletContextInitializer 来实现的，它实现了 ServletContextInitializer 接口。
    - 注意到 onStartup 方法的参数是我们熟悉的 ServletContext，可以通过调用它的 addServlet 方法来动态注册新的 Servlet，这是 Servlet 3.0 以后才有的功能。
 
-### 6.4 Web 容器的定制
+### 7.4 Web 容器的定制
 
 第一种方式是通过通用的 Web 容器工厂 ConfigurableServletWebServerFactory，来定制一些 Web 容器通用的参数：
 

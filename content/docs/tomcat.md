@@ -302,7 +302,7 @@ Tomcat 线程池扩展了原生的 ThreadPoolExecutor，通过重写 execute 方
 1. 前 corePoolSize 个任务时，来一个任务就创建一个新线程。
 2. 再来任务的话，就把任务添加到任务队列里让所有的线程去抢，如果队列满了就创建临时线程。
 3. 如果总线程数达到 maximumPoolSize，**则继续尝试把任务添加到任务队列中去。**
-4. **如果缓冲队列也满了，插入失败，执行拒绝策略。**
+4. **如果队列还是满的，插入失败，则执行拒绝策略。**
 
 ```java
 public class ThreadPoolExecutor extends java.util.concurrent.ThreadPoolExecutor {

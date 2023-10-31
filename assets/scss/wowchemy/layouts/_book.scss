@@ -117,7 +117,7 @@
 .docs-sidebar .nav > li > a {
   display: block;
   padding: 0.25rem 1.5rem;
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   color: rgba(0, 0, 0, 0.65);
 }
 
@@ -246,7 +246,6 @@ ul.toc-top {
 
 #TableOfContents li {
   display: block;
-  margin-bottom: 8px; // Lighthouse: tap targets must be at least 8px apart
 }
 
 #TableOfContents li a,
@@ -254,8 +253,8 @@ ul.toc-top {
   display: block;
   padding: 0 1.5rem; // Override default padding
   color: rgba(0, 0, 0, 0.65);
-  line-height: 1.75; // Lighthouse: min tap target size
-  font-size: 16px; // Lighthouse: min tap target size
+  line-height: 1.5rem; // Lighthouse: min tap target size
+  font-size: 0.875rem; // Lighthouse: min tap target size
 }
 
 .dark #TableOfContents li a,

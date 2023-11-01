@@ -29,9 +29,9 @@
 
   {{ if .Page.Store.Get "has_mermaid" }}
     {{/* Title attribute is used by wowchemy-theming.js to detect Mermaid */}}
-    <script type="module">
+    <script type="module" title="mermaid">
       import mermaid from {{ printf "%s" (printf $js.mermaid.url $js.mermaid.version) | safeHTML }};
-      mermaid.initialize({ startOnLoad: true });
+      window.mermaid = mermaid;
     </script>
   {{ end }}
 

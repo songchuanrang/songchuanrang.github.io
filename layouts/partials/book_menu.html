@@ -3,7 +3,7 @@
 {{- $first := false -}}
 {{- $current_node := .current_node -}}
 {{- $is_root := .is_root -}}
-{{- $order_by := .order_by -}}
+{{- $order_by := site.Params.books.order_by | default "weight"  -}}
 {{ $icon := "" }}
 
 {{ with .sect }}
@@ -57,6 +57,14 @@
         {{- end -}}
       {{- else if eq $order_by "title_desc" -}}
         {{- range $pages.ByTitle.Reverse -}}
+          {{ template "book-menu" dict "sect" . "current_node" $current_node "order_by" $order_by }}
+        {{- end -}}
+      {{- else if eq $order_by "date" -}}
+        {{- range $pages.ByDate -}}
+          {{ template "book-menu" dict "sect" . "current_node" $current_node "order_by" $order_by }}
+        {{- end -}}
+      {{- else if eq $order_by "date_desc" -}}
+        {{- range $pages.ByDate.Reverse -}}
           {{ template "book-menu" dict "sect" . "current_node" $current_node "order_by" $order_by }}
         {{- end -}}
       {{- else -}}

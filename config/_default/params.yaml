@@ -50,6 +50,9 @@ footer:
       share_alike: true
       allow_commercial: false
 
+books:
+  order_by: date_desc
+
 # Localization
 
 locale:

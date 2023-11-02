@@ -7,6 +7,7 @@ category:
  - JAVA IO
 keywords:
  - JAVA IO
+weight: 100
 ---
 ## 概述
 java.nio全称java non-blocking IO，是指JDK1.4 及以上版本里提供的新api（New IO） ，为所有的原始类型（boolean类型除外）提供缓存支持的数据容器，使用它可以提供非阻塞式的高伸缩性网络  

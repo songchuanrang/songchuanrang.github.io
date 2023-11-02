@@ -5,7 +5,7 @@ type: book
 date: 2022-04-03 20:35:25.000 +0800
 
 # Prev/next pager order (if `docs_section_pager` enabled in `params.toml`)
-weight: 3
+weight: 150
 ---
 ## 简介
 本文旨在完成nginx的安装以及前端和后端的转发配置（以linux为例）
@@ -14,7 +14,7 @@ nginx官网：https://nginx.org/en/download.html
 下载其中的Mainline version
 ## 安装nginx
 首先解压至任意路径，然后cd进入解压后的文件夹，执行以下命令：
-~~~
+~~~bash
 ./configure --prefix=/usr/local/nginx --with-http_ssl_module 
 ~~~
 这一步是用来配置要安装的nginx，其中，
@@ -22,11 +22,11 @@ nginx官网：https://nginx.org/en/download.html
 - `--with-http_ssl_module` 支持https;
 
 > 对于安装好的nginx，查看./configure后指定的参数可使用以下命令：
-> ~~~
+> ~~~bash
 >  ./sbin/nginx -V
 > ~~~
 再执行一下命令：
-~~~
+~~~bash
 make install
 ~~~
 这样，nginx就安装好了，可以进入nginx的安装路径，执行相应的路由转发配置了
@@ -103,7 +103,7 @@ http {
 ~~~
 
 ## 启动nginx
-~~~
+~~~bash
 # 启动
 sbin/nginx
 # 检查配置文件合法性 

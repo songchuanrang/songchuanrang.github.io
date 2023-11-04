@@ -6,7 +6,7 @@ date: 2023-10-19 15:38:17.000 +0800
 weight: 10
 ---
 
-## 1. 总体架构
+## 总体架构
 
 Tomcat 要实现 2 个核心功能：
 
@@ -17,7 +17,7 @@ Tomcat 设计了两个核心组件连接器（Connector）和容器（Container�
 
 最顶层是 Server，这里的 Server 指的就是一个 Tomcat 实例。一个 Server 中有一个或者多个 Service，一个 Service 中有多个连接器和一个容器。连接器与容器之间通过标准的 ServletRequest 和 ServletResponse 通信。
 
-### 1.1 连接器（Connector）
+### 连接器（Connector）
 
 连接器需要完成 3 个功能：
 
@@ -38,7 +38,7 @@ Tomcat 的设计者设计了 3 个组件来实现这 3 个功能，分别是
 
 其中 Endpoint 和 Processor 放在一起抽象成了 ProtocolHandler 组件
 
-### 1.2 容器（Container）
+### 容器（Container）
 
 容器负责加载和管理 Servlet，以及具体处理 Request 请求。
 Tomcat 设计了 4 种父子关系的容器，分别是 Engine、Host、Context 和 Wrapper。
@@ -48,7 +48,7 @@ Tomcat 设计了 4 种父子关系的容器，分别是 Engine、Host、Context 
 3. Context：表示一个 Web 应用程序；
 4. Wrapper：表示一个 Servlet，一个 Web 应用程序中可能会有多个 Servlet；
 
-### 1.3 请求定位 Servlet
+### 请求定位 Servlet
 
 1. 首先，根据协议和端口号选定 Service 和 Engine。
    我们知道 Tomcat 的每个连接器都监听不同的端口，比如 Tomcat 默认的 HTTP 连接器监听 8080 端口、默认的 AJP 连接器监听 8009 端口。当我们访问监听器监听的端口时，就会被相应的连接器接收，而一个连接器是属于一个 Service 组件的，这样 Service 组件就确定了。我们还知道一个 Service 组件里除了有多个连接器，还有一个容器组件，具体来说就是一个 Engine 容器，因此 Service 确定了也就意味着 Engine 也确定了。
@@ -56,7 +56,7 @@ Tomcat 设计了 4 种父子关系的容器，分别是 Engine、Host、Context 
 3. 之后，Mapper 组件根据 URL 的路径来匹配相应的 Web 应用的路径，找到context组件
 4. 最后，Mapper 组件再根据 web.xml 中配置的 Servlet 映射路径来找到具体的 Wrapper 和 Servlet。
 
-### 1.4 容器中的责任链调用
+### 容器中的责任链调用
 
 责任链模式(Pipeline-Valve)是指在一个请求处理的过程中有很多处理者依次对请求进行处理，每个处理者负责做自己相应的处理，处理完之后将再调用下一个处理者继续处理。
 
@@ -94,9 +94,9 @@ Valve 和 Filter 的功能相似，区别是：
 - Valve 是 Tomcat 的私有机制，与 Tomcat 的基础架构/API 是紧耦合的。Servlet API 是公有的标准，所有的 Web 容器包括 Jetty 都支持 Filter 机制。
 - 另一个重要的区别是 Valve 工作在 Web 容器级别，拦截所有应用的请求；而 Servlet Filter 工作在应用级别，只能拦截某个 Web 应用的所有请求。如果想做整个 Web 容器的拦截器，必须通过 Valve 来实现。
 
-## 2. Tomcat 实现一键式启停
+## Tomcat 实现一键式启停
 
-### 2.1 一键式启停：LifeCycle 接口
+### 一键式启停：LifeCycle 接口
 
 LifeCycle 接口里应该定义这么几个方法：init()、start()、stop()和 destroy()，每个具体的组件去实现这些方法。
 
@@ -111,7 +111,7 @@ public interface Lifecycle {
 }
 ```
 
-### 2.2 可扩展性：LifeCycle 事件
+### 可扩展性：LifeCycle 事件
 
 我们注意到，组件的 init()和 start()调用是由它的父组件的状态变化触发的，上层组件的初始化会触发子组件的初始化，上层组件的启动会触发子组件的启动，因此我们把组件的生命周期定义成一个个状态，把状态的转变看作是一个事件。而事件是有监听器的，在监听器里可以实现一些逻辑，并且监听器也可以方便的添加和删除，这就是典型的**观察者模式**。
 
@@ -119,7 +119,7 @@ public interface Lifecycle {
 
 组件的生命周期有 NEW、INITIALIZING、INITIALIZED、STARTING_PREP、STARTING、STARTED 等，而一旦组件到达相应的状态就触发相应的事件，比如 NEW 状态表示组件刚刚被实例化；而当 init()方法被调用时，状态就变成 INITIALIZING 状态，这个时候，就会触发 BEFORE_INIT_EVENT 事件，如果有监听器在监听这个事件，它的方法就会被调用。
 
-### 2.3 重用性：LifeCycleBase 抽象基类
+### 重用性：LifeCycleBase 抽象基类
 
 Tomcat 定义一个基类 LifeCycleBase 来实现 LifeCycle 接口，把一些公共的逻辑放到基类中去，比如生命状态的转变与维护、生命事件的触发以及监听器的添加和删除等，而子类就负责实现自己的初始化、启动和停止等方法。为了避免跟基类中的方法同名，我们把具体子类的实现方法改个名字，在后面加上 Internal，叫 initInternal()、startInternal()等
 
@@ -150,9 +150,9 @@ public final synchronized void init() throws LifecycleException {
 }
 ```
 
-## 3. Tomcat 启动流程
+## Tomcat 启动流程
 
-### 3.1 总体流程
+### 总体流程
 
 1. Tomcat 本质上是一个 Java 程序，因此 startup.sh 脚本会启动一个 JVM 来运行 Tomcat 的启动类 Bootstrap。
 2. Bootstrap 的主要任务是初始化 Tomcat 的类加载器，并且创建 Catalina。
@@ -160,19 +160,19 @@ public final synchronized void init() throws LifecycleException {
 4. Server 组件的职责就是管理 Service 组件，它会负责调用 Service 的 start 方法。
 5. Service 组件的职责就是管理连接器和顶层容器 Engine，因此它会调用连接器和 Engine 的 start 方法。这样 Tomcat 的启动就算完成了。
 
-### 3.2 Catalina
+### Catalina
 
 Catalina 的主要任务就是创建 Server，它不是直接 new 一个 Server 实例就完事了，而是需要解析 server.xml，把在 server.xml 里配置的各种组件一一创建出来，接着调用 Server 组件的 init 方法和 start 方法，这样整个 Tomcat 就启动起来了。
 
 Catalina 在 JVM 中注册一个“关闭钩子”。关闭钩子”其实就是一个线程，JVM 在停止之前会尝试执行这个线程的 run 方法。当我们通过“Ctrl + C”关闭 Tomcat 时，Tomcat 的“关闭钩子”就执行 Server 的 stop 方法，Server 的 stop 方法会释放和清理所有的资源。
 
-### 3.3 Server 组件
+### Server 组件
 
 Server 组件的具体实现类是 StandardServer。Server 继承了 LifeCycleBase，它的生命周期被统一管理，并且它的子组件是 Service，因此它还需要管理 Service 的生命周期，也就是说在启动时调用 Service 组件的启动方法，在停止时调用它们的停止方法。
 
 Server 组件还有一个重要的任务是启动一个 Socket 来监听停止端口，这就是为什么你能通过 shutdown 命令来关闭 Tomcat。Caralina 的启动方法的最后一行代码就是调用了 Server 的 await 方法。在 await 方法里会创建一个 Socket 监听 8005 端口，并在一个死循环里接收 Socket 上的连接请求，如果有新的连接到来就建立连接，然后从 Socket 中读取数据；如果读到的数据是停止命令“SHUTDOWN”，就退出循环，进入 stop 流程。
 
-### 3.4 Service 组件
+### Service 组件
 
 Service 组件的具体实现类是 StandardService，以下是它的定义以及关键的成员变量
 
@@ -222,7 +222,7 @@ protected void startInternal() throws LifecycleException {
 
 从启动方法可以看到，Service 先启动了 Engine 组件，再启动 Mapper 监听器，最后才是启动连接器。这很好理解，因为内层组件启动好了才能对外提供服务，才能启动外层的连接器组件。而 Mapper 也依赖容器组件，容器组件启动好了才能监听它们的变化，因此 Mapper 和 MapperListener 在容器组件之后启动。组件停止的顺序跟启动顺序正好相反的，也是基于它们的依赖关系。
 
-### 3.5 Engine 组件
+### Engine 组件
 
 最后我们再来看看顶层的容器组件 Engine 具体是如何实现的。Engine 本质是一个容器，因此它继承了 ContainerBase 基类，并且实现了 Engine 接口。
 
@@ -263,9 +263,9 @@ final class StandardEngineValve extends ValveBase {
 
 请求到达 Engine 容器中之前，Mapper 组件已经对请求进行了路由处理，Mapper 组件通过请求的 URL 定位了相应的容器，并且把容器对象保存到了请求对象中。
 
-## 4. Tomcat 线程池
+## Tomcat 线程池
 
-### 4.1 Java 线程池：ThreadPoolExecutor
+### Java 线程池：ThreadPoolExecutor
 
 Java 线程池核心类 ThreadPoolExecutor 的构造函数:
 
@@ -286,7 +286,7 @@ public ThreadPoolExecutor(
     RejectedExecutionHandler handler)
 ```
 
-### 4.2 Tomcat 线程池
+### Tomcat 线程池
 
 **定制版的 ThreadPoolExecutor**
 
@@ -361,9 +361,9 @@ public class TaskQueue extends LinkedBlockingQueue<Runnable> {
 }
 ```
 
-## 5. Context 容器（上）：Tomcat 如何打破双亲委托机制
+## Context 容器（上）：Tomcat 如何打破双亲委托机制
 
-### 5.1 JVM 的类加载器
+### JVM 的类加载器
 
 Java 的类加载，就是把字节码格式“.class”文件加载到 JVM 的方法区，并在 JVM 的堆区建立一个 java.lang.Class 对象的实例，用来封装 Java 类相关的数据和方法。
 
@@ -431,7 +431,7 @@ AppClassLoader --> 自定义类加载器B
 
 这些类加载器的工作原理是一样的，区别是它们的加载路径不同，也就是说 findClass 这个方法查找的路径不同。双亲委托机制是为了保证一个 Java 类在 JVM 中是唯一的，假如你不小心写了一个与 JRE 核心类同名的类，比如 Object 类，双亲委托机制能保证加载的是 JRE 里的那个 Object 类，而不是你写的 Object 类。这是因为 AppClassLoader 在加载你的 Object 类时，会委托给 ExtClassLoader 去加载，而 ExtClassLoader 又会委托给 BootstrapClassLoader，BootstrapClassLoader 发现自己已经加载过了 Object 类，会直接返回，不会去加载你写的 Object 类。
 
-### 5.2 Tomcat 的类加载器
+### Tomcat 的类加载器
 
 Tomcat 的自定义类加载器 WebAppClassLoader 打破了双亲委托机制，它首先自己尝试去加载某个类，如果找不到再代理给父类加载器，其目的是优先加载 Web 应用自己定义的类。具体实现就是重写 ClassLoader 的两个方法：findClass 和 loadClass。
 
@@ -540,7 +540,7 @@ public Class<?> findClass(String name) throws ClassNotFoundException {
 
 从上面的过程我们可以看到，Tomcat 的类加载器打破了双亲委托机制，没有一上来就直接委托给父加载器，而是先在本地目录下加载，为了避免本地目录下的类覆盖 JRE 的核心类，先尝试用 JVM 扩展类加载器 ExtClassLoader 去加载。那为什么不先用系统类加载器 AppClassLoader 去加载？很显然，如果是这样的话，那就变成双亲委托机制了，这就是 Tomcat 类加载器的巧妙之处。
 
-## 6. Context 容器（中）：Tomcat 如何隔离 Web 应用
+## Context 容器（中）：Tomcat 如何隔离 Web 应用
 
 Tomcat 作为 Servlet 容器，它负责加载我们的 Servlet 类，此外它还负责加载 Servlet 所依赖的 JAR 包。并且 Tomcat 本身也是也是一个 Java 程序，因此它需要加载自己的类和依赖的 JAR 包。
 
@@ -579,9 +579,9 @@ Tomcat 的解决方案是自定义一个类加载器 WebAppClassLoader， 并且
 
 **线程上下文加载器**
 
-## 7 SpringBoot 使用内嵌式的 Tomcat
+## SpringBoot 使用内嵌式的 Tomcat
 
-### 7.1 SpringBoot 中 Web 容器相关的接口
+### SpringBoot 中 Web 容器相关的接口
 
 Spring Boot 对内嵌式 Web 容器进行了抽象，定义了 WebServer 接口：
 
@@ -621,7 +621,7 @@ public interface WebServerFactoryCustomizer<T extends WebServerFactory> {
 }
 ```
 
-### 7.2 内嵌式 Web 容器的创建和启动
+### 内嵌式 Web 容器的创建和启动
 
 铺垫了这些接口，我们再来看看 Spring Boot 是如何实例化和启动一个 Web 容器的。我们知道，Spring 的核心是一个 ApplicationContext，它的抽象实现类 AbstractApplicationContext 实现了著名的 refresh 方法，它用来新建或者刷新一个 ApplicationContext，在 refresh 方法中会调用 onRefresh 方法，AbstractApplicationContext 的子类可以重写这个 onRefresh 方法，来实现特定 Context 的刷新逻辑，因此 ServletWebServerApplicationContext 就是通过重写 onRefresh 方法来创建内嵌式的 Web 容器，具体创建过程是这样的：
 
@@ -693,7 +693,7 @@ public WebServer getWebServer(ServletContextInitializer... initializers) {
 class TomcatEmbeddedContext extends StandardContext {}
 ```
 
-### 7.3 注册 Servlet 的三种方式
+### 注册 Servlet 的三种方式
 
 1. Servlet 注解  
    在 Spring Boot 启动类上加上@ServletComponentScan 注解后，使用@WebServlet、@WebFilter、@WebListener 标记的 Servlet、Filter、Listener 就可以自动注册到 Servlet 容器中.
@@ -737,7 +737,7 @@ class TomcatEmbeddedContext extends StandardContext {}
    - ServletRegistrationBean 其实也是通过 ServletContextInitializer 来实现的，它实现了 ServletContextInitializer 接口。
    - 注意到 onStartup 方法的参数是我们熟悉的 ServletContext，可以通过调用它的 addServlet 方法来动态注册新的 Servlet，这是 Servlet 3.0 以后才有的功能。
 
-### 7.4 Web 容器的定制
+### Web 容器的定制
 
 第一种方式是通过通用的 Web 容器工厂 ConfigurableServletWebServerFactory，来定制一些 Web 容器通用的参数：
 

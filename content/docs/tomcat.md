@@ -28,13 +28,13 @@ Tomcat 设计了两个核心组件连接器（Connector）和容器（Container�
 
 Tomcat 的设计者设计了 3 个组件来实现这 3 个功能，分别是
 
-1. EndPoint：提供字节流给 Processor
+1. EndPoint：监听接口，提供字节流给 Processor  
    EndPoint 是通信端点，即通信监听的接口，是具体的 Socket 接收和发送处理器，是对传输层的抽象，因此 EndPoint 是用来实现 TCP/IP 协议的。
    EndPoint 是一个接口，它的抽象实现类 AbstractEndpoint 里面定义了两个内部类：Acceptor 和 SocketProcessor。
    其中 Acceptor 用于监听 Socket 连接请求。SocketProcessor 用于处理接收到的 Socket 请求，它实现 Runnable 接口，在 Run 方法里调用协议处理组件 Processor 进行处理。为了提高处理能力，SocketProcessor 被提交到线程池来执行。而这个线程池叫作执行器(Executor)
-2. Processor：提供 Tomcat Request 对象给 Adaptor
+2. Processor：读取字节流，提供 Tomcat Request 对象给 Adaptor  
    Processor 用来实现 HTTP 协议，Processor 接收来自 EndPoint 的 Socket，读取字节流解析成 Tomcat Request 和 Response 对象，并通过 Adapter 将其提交到容器处理，Processor 是对应用层协议的抽象。Processor 是一个接口，定义了请求的处理等方法。它的抽象实现类 AbstractProcessor 对一些协议共有的属性进行封装，没有对方法进行实现。具体的实现有 AJPProcessor、HTTP11Processor 等，这些具体实现类实现了特定协议的解析方法和请求处理方式。
-3. Adaptor：提供 ServletRequest 对象给容器
+3. Adaptor：处理 Tomcat Request 对象，提供 ServletRequest 对象给容器  
    连接器调用 CoyoteAdapter 的 Sevice 方法，传入的是 Tomcat Request 对象，CoyoteAdapter 负责将 Tomcat Request 转成 ServletRequest，再调用容器的 Service 方法。
 
 其中 Endpoint 和 Processor 放在一起抽象成了 ProtocolHandler 组件

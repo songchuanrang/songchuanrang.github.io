@@ -7,7 +7,7 @@ category:
 keywords:
   - centos7
   - yum
-weight: 3
+weight: 200
 ---
 ## 简介
 centos挂载iso文件作为yum安装源

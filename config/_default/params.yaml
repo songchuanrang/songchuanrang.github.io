@@ -8,8 +8,8 @@
 appearance:
   theme_day: minimal
   theme_night: minimal
-  font: minimal
-  font_size: L
+  font: classic
+  font_size: s
 
 # SEO
 
@@ -50,10 +50,13 @@ footer:
       share_alike: true
       allow_commercial: false
 
+books:
+  order_by: date_desc
+
 # Localization
 
 locale:
-  date_format: '2006/Jan/2'
+  date_format: '2006/1/2'
   time_format: '15:04:05'
 
 # Site features

@@ -7,6 +7,7 @@ category:
  - JAVA IO
 keywords:
  - JAVA IO
+weight: 100
 ---
 ## 概述
 java.nio全称java non-blocking IO，是指JDK1.4 及以上版本里提供的新api（New IO） ，为所有的原始类型（boolean类型除外）提供缓存支持的数据容器，使用它可以提供非阻塞式的高伸缩性网络  
@@ -37,13 +38,13 @@ ByteBuffer --> MappedByteBuffer
 操作 Buffer 和操作数组差不多，只不过大部分时候我们都把它放到了 NIO 的场景里面来使用而已。下面介绍 Buffer 中的几个重要属性和几个重要方法。
 #### position、limit、capacity
 就像数组有数组容量，每次访问元素要指定下标，Buffer 中也有几个重要属性：position、limit、capacity。  
-![img.png](/images/java-nio/ByteBuffer.png)
+![img.png](/images/ByteBuffer.png)
 
 1. capacity，为缓冲区的容量
 2. position 代表下一次的写入位置，初始值是0，每往Buffer中写入一个值，position就自动加 1。读操作的时候也是类似的，每读一个值，position 就自动加 1。
 > 从写操作模式到读操作模式切换的时候（flip），position 都会归零，这样就可以从头开始读写了。
 3. limit：写操作模式下，limit 代表的是最大能写入的数据，这个时候 limit 等于 capacity。写结束后，切换到读模式，此时的 limit 等于 Buffer 中实际的数据大小，因为 Buffer 不一定被写满了。
-![img.png](/images/java-nio/bytebuffer-2.png)
+![img.png](/images/bytebuffer-2.png)
 
 #### 初始化Buffer
 每个 Buffer 实现类都提供了一个静态方法 allocate(int capacity) 帮助我们快速实例化一个 Buffer。如：

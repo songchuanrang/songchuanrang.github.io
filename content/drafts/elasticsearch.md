@@ -1,7 +1,8 @@
 ---
 title: elasticsearch 安装
 date: 2022/4/12 22:15:59
-comments: true
+type: book
+draft: true
 category:
  - elasticsearch
 keywords:

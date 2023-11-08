@@ -8,6 +8,32 @@ weight: 10
 
 ## 总体架构
 
+server.xml 配置如下：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Server port="8005" shutdown="SHUTDOWN">
+  <Service name="Catalina">
+    <Connector port="8080" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8443" />
+    <Engine name="Catalina" defaultHost="localhost">
+      <Realm className="org.apache.catalina.realm.LockOutRealm">
+        <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+               resourceName="UserDatabase"/>
+      </Realm>
+      <Host name="localhost"  appBase="webapps"
+            unpackWARs="true" autoDeploy="true">
+        <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
+               prefix="localhost_access_log" suffix=".txt"
+               pattern="%h %l %u %t &quot;%r&quot; %s %b" />
+      </Host>
+    </Engine>
+  </Service>
+</Server>
+
+```
+
 Tomcat 要实现 2 个核心功能：
 
 1. 处理 Socket 连接，负责网络字节流与 Request 和 Response 对象的转化。
@@ -53,7 +79,7 @@ Tomcat 设计了 4 种父子关系的容器，分别是 Engine、Host、Context 
 1. 首先，根据协议和端口号选定 Service 和 Engine。
    我们知道 Tomcat 的每个连接器都监听不同的端口，比如 Tomcat 默认的 HTTP 连接器监听 8080 端口、默认的 AJP 连接器监听 8009 端口。当我们访问监听器监听的端口时，就会被相应的连接器接收，而一个连接器是属于一个 Service 组件的，这样 Service 组件就确定了。我们还知道一个 Service 组件里除了有多个连接器，还有一个容器组件，具体来说就是一个 Engine 容器，因此 Service 确定了也就意味着 Engine 也确定了。
 2. 然后，Mapper 组件通过 URL 中的域名去查找相应的 Host 容器
-3. 之后，Mapper 组件根据 URL 的路径来匹配相应的 Web 应用的路径，找到context组件
+3. 之后，Mapper 组件根据 URL 的路径来匹配相应的 Web 应用的路径，找到 context 组件
 4. 最后，Mapper 组件再根据 web.xml 中配置的 Servlet 映射路径来找到具体的 Wrapper 和 Servlet。
 
 ### 容器中的责任链调用

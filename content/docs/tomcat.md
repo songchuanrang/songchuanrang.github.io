@@ -8,6 +8,17 @@ weight: 10
 
 ## 总体架构
 
+Tomcat 要实现 2 个核心功能：
+
+1. 处理 Socket 连接，负责网络字节流与 Request 和 Response 对象的转化。
+2. 加载和管理 Servlet，以及具体处理 Request 请求。
+
+Tomcat 设计了两个核心组件连接器（Connector）和容器（Container）来分别做这两件事情。连接器负责对外交流，容器负责内部处理。
+
+最顶层是 Server，这里的 Server 指的就是一个 Tomcat 实例。一个 Server 中有一个或者多个 Service，一个 Service 中有多个连接器和一个容器。连接器与容器之间通过标准的 ServletRequest 和 ServletResponse 通信。
+
+结构设计可以通过 conf/server.xml 的配置体现。
+
 server.xml 配置如下：
 
 ```xml
@@ -33,15 +44,6 @@ server.xml 配置如下：
 </Server>
 
 ```
-
-Tomcat 要实现 2 个核心功能：
-
-1. 处理 Socket 连接，负责网络字节流与 Request 和 Response 对象的转化。
-2. 加载和管理 Servlet，以及具体处理 Request 请求。
-
-Tomcat 设计了两个核心组件连接器（Connector）和容器（Container）来分别做这两件事情。连接器负责对外交流，容器负责内部处理。
-
-最顶层是 Server，这里的 Server 指的就是一个 Tomcat 实例。一个 Server 中有一个或者多个 Service，一个 Service 中有多个连接器和一个容器。连接器与容器之间通过标准的 ServletRequest 和 ServletResponse 通信。
 
 ### 连接器（Connector）
 

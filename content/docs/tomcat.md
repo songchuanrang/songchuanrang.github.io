@@ -609,7 +609,7 @@ Tomcat 的解决方案是自定义一个类加载器 WebAppClassLoader， 并且
 
 #### 线程上下文加载器
 
-## SpringBoot 使用内嵌式的 Tomcat
+## 内嵌式 Tomcat（SpringBoot）
 
 ### SpringBoot 中 Web 容器相关的接口
 

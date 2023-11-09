@@ -76,55 +76,11 @@ Tomcat 设计了 4 种父子关系的容器，分别是 Engine、Host、Context 
 3. Context：表示一个 Web 应用程序；
 4. Wrapper：表示一个 Servlet，一个 Web 应用程序中可能会有多个 Servlet；
 
-### 请求定位 Servlet
+## Tomcat 启动流程
 
-1. 首先，根据协议和端口号选定 Service 和 Engine。
-   我们知道 Tomcat 的每个连接器都监听不同的端口，比如 Tomcat 默认的 HTTP 连接器监听 8080 端口、默认的 AJP 连接器监听 8009 端口。当我们访问监听器监听的端口时，就会被相应的连接器接收，而一个连接器是属于一个 Service 组件的，这样 Service 组件就确定了。我们还知道一个 Service 组件里除了有多个连接器，还有一个容器组件，具体来说就是一个 Engine 容器，因此 Service 确定了也就意味着 Engine 也确定了。
-2. 然后，Mapper 组件通过 URL 中的域名去查找相应的 Host 容器
-3. 之后，Mapper 组件根据 URL 的路径来匹配相应的 Web 应用的路径，找到 context 组件
-4. 最后，Mapper 组件再根据 web.xml 中配置的 Servlet 映射路径来找到具体的 Wrapper 和 Servlet。
+### Tomcat 实现一键式启停
 
-### 容器中的责任链调用
-
-责任链模式(Pipeline-Valve)是指在一个请求处理的过程中有很多处理者依次对请求进行处理，每个处理者负责做自己相应的处理，处理完之后将再调用下一个处理者继续处理。
-
-- Valve 表示一个处理点，比如权限认证和记录日志。通过 getNext 和 setNext 方法将 Valve 链起来。
-
-```java
-public interface Valve {
-    public Valve getNext();
-    public void setNext(Valve valve);
-    public void invoke(Request request, Response response)
-}
-```
-
-- Pipeline 中维护了 Valve 链表，Valve 可以插入到 Pipeline 中，对请求做某些处理
-
-```java
-public interface Pipeline extends Contained {
-    public void addValve(Valve valve);
-    public Valve getBasic();
-    public void setBasic(Valve valve);
-    public Valve getFirst();
-}
-```
-
-每一个容器都有一个 Pipeline 对象，只要触发这个 Pipeline 的第一个 Valve，这个容器里 Pipeline 中的 Valve 就都会被调用到。容器的 Pipeline 通过调用 getBasic 方法获取到 BasicValve，这个 BasicValve 处于 Valve 链表的末端，它是 Pipeline 中必不可少的一个 Valve，负责调用下层容器的 Pipeline 里的第一个 Valve。
-整个调用过程由连接器中的 Adapter 触发的，它会调用 Engine 的第一个 Valve：
-
-```java
-connector.getService().getContainer().getPipeline().getFirst().invoke(request, response);
-```
-
-Wrapper 容器的最后一个 Valve 会创建一个 Filter 链，并调用 doFilter()方法，最终会调到 Servlet 的 service 方法。
-Valve 和 Filter 的功能相似，区别是：
-
-- Valve 是 Tomcat 的私有机制，与 Tomcat 的基础架构/API 是紧耦合的。Servlet API 是公有的标准，所有的 Web 容器包括 Jetty 都支持 Filter 机制。
-- 另一个重要的区别是 Valve 工作在 Web 容器级别，拦截所有应用的请求；而 Servlet Filter 工作在应用级别，只能拦截某个 Web 应用的所有请求。如果想做整个 Web 容器的拦截器，必须通过 Valve 来实现。
-
-## Tomcat 实现一键式启停
-
-### 一键式启停：LifeCycle 接口
+#### 一键式启停：LifeCycle 接口
 
 LifeCycle 接口里应该定义这么几个方法：init()、start()、stop()和 destroy()，每个具体的组件去实现这些方法。
 
@@ -139,7 +95,7 @@ public interface Lifecycle {
 }
 ```
 
-### 可扩展性：LifeCycle 事件
+#### 可扩展性：LifeCycle 事件
 
 我们注意到，组件的 init()和 start()调用是由它的父组件的状态变化触发的，上层组件的初始化会触发子组件的初始化，上层组件的启动会触发子组件的启动，因此我们把组件的生命周期定义成一个个状态，把状态的转变看作是一个事件。而事件是有监听器的，在监听器里可以实现一些逻辑，并且监听器也可以方便的添加和删除，这就是典型的**观察者模式**。
 
@@ -147,7 +103,7 @@ public interface Lifecycle {
 
 组件的生命周期有 NEW、INITIALIZING、INITIALIZED、STARTING_PREP、STARTING、STARTED 等，而一旦组件到达相应的状态就触发相应的事件，比如 NEW 状态表示组件刚刚被实例化；而当 init()方法被调用时，状态就变成 INITIALIZING 状态，这个时候，就会触发 BEFORE_INIT_EVENT 事件，如果有监听器在监听这个事件，它的方法就会被调用。
 
-### 重用性：LifeCycleBase 抽象基类
+#### 重用性：LifeCycleBase 抽象基类
 
 Tomcat 定义一个基类 LifeCycleBase 来实现 LifeCycle 接口，把一些公共的逻辑放到基类中去，比如生命状态的转变与维护、生命事件的触发以及监听器的添加和删除等，而子类就负责实现自己的初始化、启动和停止等方法。为了避免跟基类中的方法同名，我们把具体子类的实现方法改个名字，在后面加上 Internal，叫 initInternal()、startInternal()等
 
@@ -177,8 +133,6 @@ public final synchronized void init() throws LifecycleException {
     }
 }
 ```
-
-## Tomcat 启动流程
 
 ### 总体流程
 
@@ -291,6 +245,54 @@ final class StandardEngineValve extends ValveBase {
 
 请求到达 Engine 容器中之前，Mapper 组件已经对请求进行了路由处理，Mapper 组件通过请求的 URL 定位了相应的容器，并且把容器对象保存到了请求对象中。
 
+## 请求处理
+
+### 请求定位 Servlet
+
+1. 首先，根据协议和端口号选定 Service 和 Engine。
+   我们知道 Tomcat 的每个连接器都监听不同的端口，比如 Tomcat 默认的 HTTP 连接器监听 8080 端口、默认的 AJP 连接器监听 8009 端口。当我们访问监听器监听的端口时，就会被相应的连接器接收，而一个连接器是属于一个 Service 组件的，这样 Service 组件就确定了。我们还知道一个 Service 组件里除了有多个连接器，还有一个容器组件，具体来说就是一个 Engine 容器，因此 Service 确定了也就意味着 Engine 也确定了。
+2. 然后，Mapper 组件通过 URL 中的域名去查找相应的 Host 容器
+3. 之后，Mapper 组件根据 URL 的路径来匹配相应的 Web 应用的路径，找到 context 组件
+4. 最后，Mapper 组件再根据 web.xml 中配置的 Servlet 映射路径来找到具体的 Wrapper 和 Servlet。
+
+### 容器中的责任链调用
+
+责任链模式(Pipeline-Valve)是指在一个请求处理的过程中有很多处理者依次对请求进行处理，每个处理者负责做自己相应的处理，处理完之后将再调用下一个处理者继续处理。
+
+- Valve 表示一个处理点，比如权限认证和记录日志。通过 getNext 和 setNext 方法将 Valve 链起来。
+
+```java
+public interface Valve {
+    public Valve getNext();
+    public void setNext(Valve valve);
+    public void invoke(Request request, Response response)
+}
+```
+
+- Pipeline 中维护了 Valve 链表，Valve 可以插入到 Pipeline 中，对请求做某些处理
+
+```java
+public interface Pipeline extends Contained {
+    public void addValve(Valve valve);
+    public Valve getBasic();
+    public void setBasic(Valve valve);
+    public Valve getFirst();
+}
+```
+
+每一个容器都有一个 Pipeline 对象，只要触发这个 Pipeline 的第一个 Valve，这个容器里 Pipeline 中的 Valve 就都会被调用到。容器的 Pipeline 通过调用 getBasic 方法获取到 BasicValve，这个 BasicValve 处于 Valve 链表的末端，它是 Pipeline 中必不可少的一个 Valve，负责调用下层容器的 Pipeline 里的第一个 Valve。
+整个调用过程由连接器中的 Adapter 触发的，它会调用 Engine 的第一个 Valve：
+
+```java
+connector.getService().getContainer().getPipeline().getFirst().invoke(request, response);
+```
+
+Wrapper 容器的最后一个 Valve 会创建一个 Filter 链，并调用 doFilter()方法，最终会调到 Servlet 的 service 方法。
+Valve 和 Filter 的功能相似，区别是：
+
+- Valve 是 Tomcat 的私有机制，与 Tomcat 的基础架构/API 是紧耦合的。Servlet API 是公有的标准，所有的 Web 容器包括 Jetty 都支持 Filter 机制。
+- 另一个重要的区别是 Valve 工作在 Web 容器级别，拦截所有应用的请求；而 Servlet Filter 工作在应用级别，只能拦截某个 Web 应用的所有请求。如果想做整个 Web 容器的拦截器，必须通过 Valve 来实现。
+
 ## 线程池
 
 ### Java 线程池：ThreadPoolExecutor
@@ -389,7 +391,7 @@ public class TaskQueue extends LinkedBlockingQueue<Runnable> {
 }
 ```
 
-## Context 容器（上）：Tomcat 如何打破双亲委托机制
+## Tomcat 如何打破双亲委托机制
 
 ### JVM 的类加载器
 
@@ -568,7 +570,7 @@ public Class<?> findClass(String name) throws ClassNotFoundException {
 
 从上面的过程我们可以看到，Tomcat 的类加载器打破了双亲委托机制，没有一上来就直接委托给父加载器，而是先在本地目录下加载，为了避免本地目录下的类覆盖 JRE 的核心类，先尝试用 JVM 扩展类加载器 ExtClassLoader 去加载。那为什么不先用系统类加载器 AppClassLoader 去加载？很显然，如果是这样的话，那就变成双亲委托机制了，这就是 Tomcat 类加载器的巧妙之处。
 
-## Context 容器（中）：Tomcat 如何隔离 Web 应用
+## Tomcat 如何隔离 Web 应用
 
 Tomcat 作为 Servlet 容器，它负责加载我们的 Servlet 类，此外它还负责加载 Servlet 所依赖的 JAR 包。并且 Tomcat 本身也是也是一个 Java 程序，因此它需要加载自己的类和依赖的 JAR 包。
 

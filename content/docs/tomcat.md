@@ -76,7 +76,7 @@ Tomcat 设计了 4 种父子关系的容器，分别是 Engine、Host、Context 
 3. Context：表示一个 Web 应用程序；
 4. Wrapper：表示一个 Servlet，一个 Web 应用程序中可能会有多个 Servlet；
 
-## Tomcat 启动流程
+## 启动流程
 
 ### Tomcat 实现一键式启停
 

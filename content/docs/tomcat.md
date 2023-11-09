@@ -245,7 +245,7 @@ final class StandardEngineValve extends ValveBase {
 
 请求到达 Engine 容器中之前，Mapper 组件已经对请求进行了路由处理，Mapper 组件通过请求的 URL 定位了相应的容器，并且把容器对象保存到了请求对象中。
 
-## 请求处理
+## 请求定位
 
 ### 请求定位 Servlet
 
@@ -293,7 +293,7 @@ Valve 和 Filter 的功能相似，区别是：
 - Valve 是 Tomcat 的私有机制，与 Tomcat 的基础架构/API 是紧耦合的。Servlet API 是公有的标准，所有的 Web 容器包括 Jetty 都支持 Filter 机制。
 - 另一个重要的区别是 Valve 工作在 Web 容器级别，拦截所有应用的请求；而 Servlet Filter 工作在应用级别，只能拦截某个 Web 应用的所有请求。如果想做整个 Web 容器的拦截器，必须通过 Valve 来实现。
 
-## 线程池
+## 自定义线程池
 
 ### Java 线程池：ThreadPoolExecutor
 
@@ -391,7 +391,7 @@ public class TaskQueue extends LinkedBlockingQueue<Runnable> {
 }
 ```
 
-## 类加载器
+## 自定义类加载器
 
 ### JVM 的类加载器
 

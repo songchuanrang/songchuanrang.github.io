@@ -76,7 +76,7 @@ Tomcat 设计了 4 种父子关系的容器，分别是 Engine、Host、Context 
 3. Context：表示一个 Web 应用程序；
 4. Wrapper：表示一个 Servlet，一个 Web 应用程序中可能会有多个 Servlet；
 
-## 启动流程
+## 框架设计
 
 ### Tomcat 实现一键式启停
 
@@ -133,6 +133,46 @@ public final synchronized void init() throws LifecycleException {
     }
 }
 ```
+
+### 容器中的责任链调用
+
+责任链模式(Pipeline-Valve)是指在一个请求处理的过程中有很多处理者依次对请求进行处理，每个处理者负责做自己相应的处理，处理完之后将再调用下一个处理者继续处理。
+
+- Valve 表示一个处理点，比如权限认证和记录日志。通过 getNext 和 setNext 方法将 Valve 链起来。
+
+```java
+public interface Valve {
+    public Valve getNext();
+    public void setNext(Valve valve);
+    public void invoke(Request request, Response response)
+}
+```
+
+- Pipeline 中维护了 Valve 链表，Valve 可以插入到 Pipeline 中，对请求做某些处理
+
+```java
+public interface Pipeline extends Contained {
+    public void addValve(Valve valve);
+    public Valve getBasic();
+    public void setBasic(Valve valve);
+    public Valve getFirst();
+}
+```
+
+每一个容器都有一个 Pipeline 对象，只要触发这个 Pipeline 的第一个 Valve，这个容器里 Pipeline 中的 Valve 就都会被调用到。容器的 Pipeline 通过调用 getBasic 方法获取到 BasicValve，这个 BasicValve 处于 Valve 链表的末端，它是 Pipeline 中必不可少的一个 Valve，负责调用下层容器的 Pipeline 里的第一个 Valve。
+整个调用过程由连接器中的 Adapter 触发的，它会调用 Engine 的第一个 Valve：
+
+```java
+connector.getService().getContainer().getPipeline().getFirst().invoke(request, response);
+```
+
+Wrapper 容器的最后一个 Valve 会创建一个 Filter 链，并调用 doFilter()方法，最终会调到 Servlet 的 service 方法。
+Valve 和 Filter 的功能相似，区别是：
+
+- Valve 是 Tomcat 的私有机制，与 Tomcat 的基础架构/API 是紧耦合的。Servlet API 是公有的标准，所有的 Web 容器包括 Jetty 都支持 Filter 机制。
+- 另一个重要的区别是 Valve 工作在 Web 容器级别，拦截所有应用的请求；而 Servlet Filter 工作在应用级别，只能拦截某个 Web 应用的所有请求。如果想做整个 Web 容器的拦截器，必须通过 Valve 来实现。
+
+## 启动流程
 
 ### 总体流程
 
@@ -254,44 +294,6 @@ final class StandardEngineValve extends ValveBase {
 2. 然后，Mapper 组件通过 URL 中的域名去查找相应的 Host 容器
 3. 之后，Mapper 组件根据 URL 的路径来匹配相应的 Web 应用的路径，找到 context 组件
 4. 最后，Mapper 组件再根据 web.xml 中配置的 Servlet 映射路径来找到具体的 Wrapper 和 Servlet。
-
-### 容器中的责任链调用
-
-责任链模式(Pipeline-Valve)是指在一个请求处理的过程中有很多处理者依次对请求进行处理，每个处理者负责做自己相应的处理，处理完之后将再调用下一个处理者继续处理。
-
-- Valve 表示一个处理点，比如权限认证和记录日志。通过 getNext 和 setNext 方法将 Valve 链起来。
-
-```java
-public interface Valve {
-    public Valve getNext();
-    public void setNext(Valve valve);
-    public void invoke(Request request, Response response)
-}
-```
-
-- Pipeline 中维护了 Valve 链表，Valve 可以插入到 Pipeline 中，对请求做某些处理
-
-```java
-public interface Pipeline extends Contained {
-    public void addValve(Valve valve);
-    public Valve getBasic();
-    public void setBasic(Valve valve);
-    public Valve getFirst();
-}
-```
-
-每一个容器都有一个 Pipeline 对象，只要触发这个 Pipeline 的第一个 Valve，这个容器里 Pipeline 中的 Valve 就都会被调用到。容器的 Pipeline 通过调用 getBasic 方法获取到 BasicValve，这个 BasicValve 处于 Valve 链表的末端，它是 Pipeline 中必不可少的一个 Valve，负责调用下层容器的 Pipeline 里的第一个 Valve。
-整个调用过程由连接器中的 Adapter 触发的，它会调用 Engine 的第一个 Valve：
-
-```java
-connector.getService().getContainer().getPipeline().getFirst().invoke(request, response);
-```
-
-Wrapper 容器的最后一个 Valve 会创建一个 Filter 链，并调用 doFilter()方法，最终会调到 Servlet 的 service 方法。
-Valve 和 Filter 的功能相似，区别是：
-
-- Valve 是 Tomcat 的私有机制，与 Tomcat 的基础架构/API 是紧耦合的。Servlet API 是公有的标准，所有的 Web 容器包括 Jetty 都支持 Filter 机制。
-- 另一个重要的区别是 Valve 工作在 Web 容器级别，拦截所有应用的请求；而 Servlet Filter 工作在应用级别，只能拦截某个 Web 应用的所有请求。如果想做整个 Web 容器的拦截器，必须通过 Valve 来实现。
 
 ## 自定义线程池
 

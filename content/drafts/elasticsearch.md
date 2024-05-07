@@ -4,13 +4,13 @@ date: 2022/4/12 22:15:59
 type: book
 draft: true
 category:
- - elasticsearch
+  - elasticsearch
 keywords:
- - elasticsearch
+  - elasticsearch
 ---
 
-~~~yml
-version: '3'
+```yml
+version: "3"
 
 services:
   scra_elastic:
@@ -30,10 +30,10 @@ services:
     restart: always
     image: docker.elastic.co/kibana/kibana:8.1.2
     container_name: scra_kibana
-#    environment:
-#      ELASTICSEARCH_HOSTS: '["http://scra_elastic:9200"]'
-#      SERVER_HOST: "127.0.0.1"
-      # 设置端口
+    #    environment:
+    #      ELASTICSEARCH_HOSTS: '["http://scra_elastic:9200"]'
+    #      SERVER_HOST: "127.0.0.1"
+    # 设置端口
     ports:
       - "5601:5601"
     networks:
@@ -42,9 +42,4 @@ services:
 networks:
   elastic:
     driver: bridge
-~~~
-
-
-
-
-
+```

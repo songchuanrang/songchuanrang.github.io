@@ -263,9 +263,11 @@ ServerSocketChannel 不和 Buffer 打交道了，因为它并不实际处理数�
 NIO 三大组件就剩 Selector 了，Selector 建立在非阻塞的基础之上，大家经常听到的 多路复用 在 Java 世界中指的就是它，用于实现一个线程管理多个 Channel。
 
 - 首先，我们开启一个 Selector。你们爱翻译成选择器也好，多路复用器也好。
+
   ```java
   Selector selector = Selector.open();
   ```
+
 - 将 Channel 注册到 Selector 上。前面我们说了，Selector 建立在非阻塞模式之上，所以注册到 Selector 的 Channel 必须要支持非阻塞模式，FileChannel 不支持非阻塞，我们这里讨论最常见的 SocketChannel 和 ServerSocketChannel。
 
   ```java

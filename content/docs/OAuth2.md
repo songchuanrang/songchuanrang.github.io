@@ -87,7 +87,7 @@ OAuth 2.0 主要有 4 类角色：
 - 密码模式（resource owner password credentials）
 - 客户端模式（client credentials）
 
-### 授权码模式（authorization code）
+### 授权码模式（Authorization Code Grant）
 
 授权码模式是功能最完整、流程最严密的授权模式。它的特点就是通过客户端的后台服务器，与"服务提供商"的认证服务器进行互动。
 
@@ -188,7 +188,7 @@ scope：表示权限范围，如果与客户端申请的范围一致，此项可
 
 从上面代码可以看到，相关参数使用 JSON 格式发送（Content-Type: application/json）。此外，HTTP 头信息中明确指定不得缓存。
 
-### 简化模式
+### 简化模式（Implicit Grant）
 
 简化模式（implicit grant type）不通过第三方应用程序的服务器，直接在浏览器中向认证服务器申请令牌，跳过了"授权码"
 这个步骤，因此得名。所有步骤在浏览器中完成，令牌对访问者是可见的，且客户端不需要认证。
@@ -268,7 +268,7 @@ C 步骤中，认证服务器回应客户端的 URI，包含以下参数：
 根据上面的 D 步骤，下一步浏览器会访问 Location 指定的网址，但是 Hash 部分不会发送。接下来的 E 步骤，服务提供商的资源服务器发送过来的代码，会提取出
 Hash 中的令牌。
 
-### 密码模式
+### 密码模式（Resource Owner Password Credentials Grant）
 
 密码模式（Resource Owner Password Credentials Grant）中，用户向客户端提供自己的用户名和密码。客户端使用这些信息，向"
 服务商提供商"索要授权。  
@@ -332,7 +332,7 @@ C步骤中，认证服务器向客户端发送访问令牌，下面是一个例�
 
 整个过程中，客户端不得保存用户的密码。
 
-### 客户端模式
+### 客户端模式（Client Credentials Grant）
 
 客户端模式（Client Credentials Grant）指客户端以自己的名义，而不是以用户的名义，向"服务提供商"
 进行认证。严格地说，客户端模式并不属于OAuth框架所要解决的问题。在这种模式中，用户直接向客户端注册，客户端以自己的名义要求"
